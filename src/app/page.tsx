@@ -28,6 +28,12 @@ export default function HomePage() {
               Docs
             </a>
             <a
+              href="/docs/python"
+              className="text-slate-300 hover:text-emerald-300"
+            >
+              Python SDK
+            </a>
+            <a
               href="https://github.com/Maheybtw/compliance-packet-api"
               className="text-slate-400 hover:text-slate-100"
             >

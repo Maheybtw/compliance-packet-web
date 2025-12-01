@@ -211,6 +211,33 @@ const usage = await client.usage();
 console.log(usage.summary);`}
             </pre>
           </div>
+          <div>
+            <h2 className="text-lg font-semibold text-slate-50 mb-2">6. Python SDK</h2>
+            <p className="mb-2">
+              A minimal Python client is available in the{" "}
+              <code className="font-mono bg-slate-900/70 px-1 py-0.5 rounded">
+                python_sdk
+              </code>{" "}
+              folder of the backend repo. It wraps{" "}
+              <code className="font-mono bg-slate-900/70 px-1 py-0.5 rounded">
+                POST /check
+              </code>{" "}
+              and{" "}
+              <code className="font-mono bg-slate-900/70 px-1 py-0.5 rounded">
+                GET /usage
+              </code>{" "}
+              into a simple, typed client.
+            </p>
+            <p className="text-xs text-slate-400 mb-2">
+              For full details and examples, see the dedicated Python SDK docs:
+            </p>
+            <a
+              href="/docs/python"
+              className="inline-flex items-center text-xs font-medium text-emerald-300 hover:text-emerald-200"
+            >
+              View Python SDK documentation →
+            </a>
+          </div>
         </section>
 
         <RegisterKey />
