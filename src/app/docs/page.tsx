@@ -12,6 +12,16 @@ export default function DocsPage() {
   const [usageError, setUsageError] = useState<string | null>(null);
   const [quickstartLang, setQuickstartLang] = useState<"curl" | "node" | "python">("curl");
 
+  // Parse usage JSON for display
+  let parsedUsage: any | null = null;
+  if (usageJson) {
+    try {
+      parsedUsage = JSON.parse(usageJson);
+    } catch {
+      parsedUsage = null;
+    }
+  }
+
   async function handleGetUsage() {
     setUsageError(null);
     setUsageJson(null);
@@ -380,13 +390,84 @@ console.log(usage.summary);`}
           )}
 
           {usageJson && (
-            <div className="mt-3">
-              <p className="text-xs font-medium text-slate-300 mb-1">
-                Usage response
-              </p>
-              <pre className="bg-slate-900/80 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto max-h-72">
-                {usageJson}
-              </pre>
+            <div className="mt-3 space-y-3">
+              {parsedUsage?.summary && (
+                <div>
+                  <p className="text-xs font-medium text-slate-300 mb-1">
+                    Summary (last 24h)
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div className="rounded-md border border-slate-800 bg-slate-950/80 px-2 py-2">
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">
+                        Total checks
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-50">
+                        {parsedUsage.summary.totalChecks ?? "–"}
+                      </p>
+                    </div>
+                    <div className="rounded-md border border-slate-800 bg-slate-950/80 px-2 py-2">
+                      <p className="text-[10px] uppercase tracking-wide text-emerald-400">
+                        Allow
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-emerald-300">
+                        {parsedUsage.summary.allow ?? "–"}
+                      </p>
+                    </div>
+                    <div className="rounded-md border border-slate-800 bg-slate-950/80 px-2 py-2">
+                      <p className="text-[10px] uppercase tracking-wide text-amber-300">
+                        Review
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-amber-200">
+                        {parsedUsage.summary.review ?? "–"}
+                      </p>
+                    </div>
+                    <div className="rounded-md border border-slate-800 bg-slate-950/80 px-2 py-2">
+                      <p className="text-[10px] uppercase tracking-wide text-rose-300">
+                        Block
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-rose-200">
+                        {parsedUsage.summary.block ?? "–"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {parsedUsage?.recent?.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-slate-300 mb-1">
+                    Most recent check
+                  </p>
+                  <div className="rounded-md border border-slate-800 bg-slate-950/80 px-3 py-2 text-[11px] text-slate-100 flex flex-wrap gap-x-4 gap-y-1">
+                    <span>
+                      <span className="text-slate-400">When:</span>{" "}
+                      {parsedUsage.recent[0].created_at}
+                    </span>
+                    <span>
+                      <span className="text-slate-400">Safety:</span>{" "}
+                      {parsedUsage.recent[0].safety_category} (
+                      {parsedUsage.recent[0].safety_score})
+                    </span>
+                    <span>
+                      <span className="text-slate-400">Decision:</span>{" "}
+                      {parsedUsage.recent[0].recommendation}
+                    </span>
+                    <span>
+                      <span className="text-slate-400">Score:</span>{" "}
+                      {parsedUsage.recent[0].compliance_score}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <p className="text-xs font-medium text-slate-300 mb-1">
+                  Raw usage response
+                </p>
+                <pre className="bg-slate-900/80 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto max-h-72">
+                  {usageJson}
+                </pre>
+              </div>
             </div>
           )}
         </section>

@@ -161,6 +161,67 @@ export default function HomePage() {
                   JSON-first &amp; language agnostic
                 </span>
               </div>
+
+              {/* Waitlist form */}
+              <div className="mt-10 rounded-2xl border border-slate-800 bg-slate-900/50 p-5 md:p-6 max-w-md">
+                <h3 className="text-sm font-semibold text-slate-100 mb-2">Join the early access waitlist</h3>
+                <p className="text-xs text-slate-400 mb-3">
+                  Get notified when new features land and secure the best pricing when early access ends.
+                </p>
+
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const emailInput = form.querySelector("input[name='email']") as HTMLInputElement;
+                    const email = emailInput.value.trim();
+
+                    if (!email) {
+                      alert("Please enter an email.");
+                      return;
+                    }
+
+                    try {
+                      const res = await fetch(
+                        (process.env.NEXT_PUBLIC_API_BASE_URL ||
+                          "https://compliance-packet-api-production.up.railway.app"
+                        ).replace(/\/$/, "") + "/early-access",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({ email }),
+                        }
+                      );
+
+                      const data = await res.json().catch(() => null);
+                      if (res.ok && data?.success) {
+                        emailInput.value = "";
+                        alert("You're on the waitlist — thank you!");
+                      } else {
+                        alert(data?.error || "Something went wrong. Please try again.");
+                      }
+                    } catch {
+                      alert("Network error — please try again.");
+                    }
+                  }}
+                  className="flex flex-col gap-3"
+                >
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    className="w-full rounded-md bg-slate-950 border border-slate-800 px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-md bg-emerald-400 text-slate-900 font-medium text-sm px-3 py-2 hover:bg-emerald-300 transition"
+                  >
+                    Join waitlist
+                  </button>
+                </form>
+              </div>
             </div>
 
             {/* Right column: example */}
