@@ -1,7 +1,57 @@
-// app/docs/page.tsx
+"use client";
+import { useState } from "react";
 import { RegisterKey } from "@/components/RegisterKey";
 import { TryIt } from "@/components/TryIt";
 export default function DocsPage() {
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
+
+  const [usageApiKey, setUsageApiKey] = useState("");
+  const [usageJson, setUsageJson] = useState<string | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
+  const [usageError, setUsageError] = useState<string | null>(null);
+
+  async function handleGetUsage() {
+    setUsageError(null);
+    setUsageJson(null);
+    setUsageLoading(true);
+
+    try {
+      const key = usageApiKey.trim();
+      if (!key) {
+        throw new Error("Please enter an API key.");
+      }
+
+      const res = await fetch(`${API_BASE_URL}/usage`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${key}`,
+        },
+      });
+
+      const text = await res.text();
+      let json: any = null;
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        // non-JSON, leave as raw text
+      }
+
+      if (!res.ok) {
+        const message =
+          (json && (json.error || json.message)) ||
+          `Usage request failed with status ${res.status}`;
+        throw new Error(message);
+      }
+
+      setUsageJson(json ? JSON.stringify(json, null, 2) : text);
+    } catch (err: any) {
+      console.error("Error fetching usage", err);
+      setUsageError(err?.message || "Failed to fetch usage.");
+    } finally {
+      setUsageLoading(false);
+    }
+  }
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
       <div className="mx-auto max-w-4xl px-6 py-10">
@@ -162,8 +212,58 @@ console.log(usage.summary);`}
             </pre>
           </div>
         </section>
+
         <RegisterKey />
         <TryIt />
+
+        <section className="mt-10 text-sm leading-relaxed text-slate-200 space-y-3">
+          <h2 className="text-lg font-semibold text-slate-50 mb-1">
+            7. Usage dashboard (per API key)
+          </h2>
+          <p className="text-xs text-slate-400">
+            After you&apos;ve sent some checks, you can fetch a summary of usage for
+            a specific API key using the{" "}
+            <code className="font-mono bg-slate-900/70 px-1 py-0.5 rounded">
+              GET /usage
+            </code>{" "}
+            endpoint.
+          </p>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-medium text-slate-300 mb-1">
+              API key
+            </label>
+            <input
+              className="w-full rounded-md bg-slate-950 border border-slate-700 px-2 py-1 text-xs text-slate-50 outline-none focus:border-emerald-400"
+              placeholder="cpk_..."
+              value={usageApiKey}
+              onChange={(e) => setUsageApiKey(e.target.value)}
+            />
+          </div>
+
+          <button
+            onClick={handleGetUsage}
+            disabled={usageLoading}
+            className="inline-flex items-center rounded-md bg-emerald-400 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-emerald-300 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {usageLoading ? "Fetching usage..." : "Fetch usage"}
+          </button>
+
+          {usageError && (
+            <p className="text-xs text-red-400 mt-2">Error: {usageError}</p>
+          )}
+
+          {usageJson && (
+            <div className="mt-3">
+              <p className="text-xs font-medium text-slate-300 mb-1">
+                Usage response
+              </p>
+              <pre className="bg-slate-900/80 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto max-h-72">
+                {usageJson}
+              </pre>
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );
