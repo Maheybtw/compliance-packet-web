@@ -150,6 +150,67 @@ main().catch(console.error);`}
 
         {/* Secondary sections */}
         <section className="mx-auto max-w-5xl px-6 pb-14 space-y-10">
+          {/* Early access pricing */}
+          <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-5 md:p-6 space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-emerald-300/80 font-medium mb-1">
+                  Early access
+                </p>
+                <h2 className="text-base md:text-lg font-semibold text-slate-50">
+                  Free while we&apos;re in early access.
+                </h2>
+                <p className="text-xs text-slate-400 max-w-md mt-1">
+                  Use the full Compliance Packet API while we harden the system and refine the
+                  packet schema. No credit card required during this phase.
+                </p>
+              </div>
+              <div className="text-right md:text-right">
+                <p className="text-sm font-semibold text-emerald-300">Free</p>
+                <p className="text-[11px] text-slate-400">
+                  up to 10,000 checks / day per project
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3 text-[11px] text-slate-300">
+              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3">
+                <p className="font-semibold text-slate-100 mb-1">What you get</p>
+                <ul className="space-y-1 text-slate-400">
+                  <li>• Full access to the /check and /usage endpoints</li>
+                  <li>• Stable JSON compliance packets</li>
+                  <li>• SDKs for Node and Python</li>
+                  <li>• Logging and basic analytics per API key</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3">
+                <p className="font-semibold text-slate-100 mb-1">Who it&apos;s for</p>
+                <ul className="space-y-1 text-slate-400">
+                  <li>• Teams wiring safety into LLM apps</li>
+                  <li>• Platforms moderating user content</li>
+                  <li>• Builders prototyping compliance workflows</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-3">
+                <p className="font-semibold text-slate-100 mb-1">
+                  After early access
+                </p>
+                <p className="text-slate-400 mb-1">
+                  Planned usage-based plans so you only pay once you&apos;re in production:
+                </p>
+                <ul className="space-y-1 text-slate-400">
+                  <li>• Developer: ~25k checks / month</li>
+                  <li>• Startup: ~150k checks / month</li>
+                  <li>• Growth: ~1M+ checks / month</li>
+                </ul>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Exact pricing is still in flux — early users will help shape it and keep their
+                  best rate.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Who it's for */}
           <div className="grid gap-6 md:grid-cols-3">
             <div className="col-span-3 md:col-span-1">
