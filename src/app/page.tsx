@@ -1,4 +1,60 @@
 // app/page.tsx
+// @client
+"use client";
+import { useEffect, useState } from "react";
+// app/page.tsx
+
+function StatusPill() {
+  const [status, setStatus] = useState<"loading" | "ok" | "down">("loading");
+
+  useEffect(() => {
+    async function check() {
+      try {
+        const base =
+          process.env.NEXT_PUBLIC_API_BASE_URL ||
+          "https://compliance-packet-api-production.up.railway.app";
+        const res = await fetch(`${base.replace(/\/$/, "")}/status`, {
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const data = await res.json().catch(() => null);
+          if (data && data.status === "ok") {
+            setStatus("ok");
+          } else {
+            setStatus("down");
+          }
+        } else {
+          setStatus("down");
+        }
+      } catch {
+        setStatus("down");
+      }
+    }
+    check();
+  }, []);
+
+  const colorClass =
+    status === "loading"
+      ? "bg-slate-500"
+      : status === "ok"
+      ? "bg-emerald-500"
+      : "bg-red-500";
+
+  const label =
+    status === "loading"
+      ? "Checking API..."
+      : status === "ok"
+      ? "API live"
+      : "API down";
+
+  return (
+    <div className="hidden md:flex items-center gap-1.5 text-[10px]">
+      <span className={`h-2.5 w-2.5 rounded-full ${colorClass}`} />
+      <span className="text-slate-400">{label}</span>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const currentYear = new Date().getFullYear();
 
@@ -23,23 +79,26 @@ export default function HomePage() {
               </span>
             </div>
           </div>
-          <nav className="flex items-center gap-4 text-xs md:text-sm">
-            <a href="/docs" className="text-slate-300 hover:text-emerald-300">
-              Docs
-            </a>
-            <a
-              href="/docs/python"
-              className="text-slate-300 hover:text-emerald-300"
-            >
-              Python SDK
-            </a>
-            <a
-              href="https://github.com/Maheybtw/compliance-packet-api"
-              className="text-slate-400 hover:text-slate-100"
-            >
-              GitHub
-            </a>
-          </nav>
+          <div className="flex items-center gap-4">
+            <nav className="flex items-center gap-4 text-xs md:text-sm">
+              <a href="/docs" className="text-slate-300 hover:text-emerald-300">
+                Docs
+              </a>
+              <a
+                href="/docs/python"
+                className="text-slate-300 hover:text-emerald-300"
+              >
+                Python SDK
+              </a>
+              <a
+                href="https://github.com/Maheybtw/compliance-packet-api"
+                className="text-slate-400 hover:text-slate-100"
+              >
+                GitHub
+              </a>
+            </nav>
+            <StatusPill />
+          </div>
         </div>
       </header>
 
