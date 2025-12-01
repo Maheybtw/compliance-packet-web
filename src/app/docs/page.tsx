@@ -10,6 +10,7 @@ export default function DocsPage() {
   const [usageJson, setUsageJson] = useState<string | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
   const [usageError, setUsageError] = useState<string | null>(null);
+  const [quickstartLang, setQuickstartLang] = useState<"curl" | "node" | "python">("curl");
 
   async function handleGetUsage() {
     setUsageError(null);
@@ -66,6 +67,104 @@ export default function DocsPage() {
             How to register, authenticate, and call the Universal Compliance Packet API.
           </p>
         </header>
+
+        <section className="mb-8 rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-200">
+          <h2 className="text-lg font-semibold text-slate-50 mb-2">Quickstart</h2>
+          <p className="text-xs text-slate-300 mb-3">
+            The fastest way to get started is to generate an API key, then call{" "}
+            <code className="font-mono bg-slate-900/70 px-1 py-0.5 rounded">
+              POST /check
+            </code>{" "}
+            with your content. Pick a language below and paste this into your app.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2 mb-3 text-[11px]">
+            <button
+              type="button"
+              onClick={() => setQuickstartLang("curl")}
+              className={`rounded-full px-3 py-1 border ${
+                quickstartLang === "curl"
+                  ? "border-emerald-400 bg-emerald-500/10 text-emerald-200"
+                  : "border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500"
+              }`}
+            >
+              cURL
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuickstartLang("node")}
+              className={`rounded-full px-3 py-1 border ${
+                quickstartLang === "node"
+                  ? "border-emerald-400 bg-emerald-500/10 text-emerald-200"
+                  : "border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500"
+              }`}
+            >
+              Node / TypeScript
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuickstartLang("python")}
+              className={`rounded-full px-3 py-1 border ${
+                quickstartLang === "python"
+                  ? "border-emerald-400 bg-emerald-500/10 text-emerald-200"
+                  : "border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500"
+              }`}
+            >
+              Python
+            </button>
+          </div>
+
+          <div className="text-[11px]">
+            {quickstartLang === "curl" && (
+              <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-3 text-slate-100 overflow-x-auto">
+{`curl -X POST https://compliance-packet-api-production.up.railway.app/check \\
+  -H "Authorization: Bearer cpk_your_api_key_here" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "content": "Hello from Compliance Packet Quickstart."
+  }'`}
+              </pre>
+            )}
+
+            {quickstartLang === "node" && (
+              <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-3 text-slate-100 overflow-x-auto">
+{`import { createComplianceClient } from "./src/sdk/client";
+
+const client = createComplianceClient({
+  apiKey: process.env.COMPLIANCE_API_KEY || "cpk_your_api_key_here",
+  baseUrl: process.env.COMPLIANCE_API_URL || "https://compliance-packet-api-production.up.railway.app",
+});
+
+async function main() {
+  const packet = await client.check(
+    "Hello from Compliance Packet Quickstart."
+  );
+
+  console.log("Decision:", packet.overall.recommendation);
+  console.log("Safety score:", packet.safety.score);
+}
+
+main().catch(console.error);`}
+              </pre>
+            )}
+
+            {quickstartLang === "python" && (
+              <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-3 text-slate-100 overflow-x-auto">
+{`from compliance_client import ComplianceClient
+
+client = ComplianceClient(
+    api_key="cpk_your_api_key_here",
+    base_url="https://compliance-packet-api-production.up.railway.app",
+)
+
+packet = client.check("Hello from Compliance Packet Quickstart.")
+
+print("Decision:", packet.overall.recommendation)
+print("Safety score:", packet.safety.score)`}
+              </pre>
+            )}
+          </div>
+        </section>
 
         <section className="space-y-8 text-sm leading-relaxed text-slate-200">
           <div>
