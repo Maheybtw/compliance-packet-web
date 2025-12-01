@@ -63,14 +63,30 @@ export function TryIt() {
     }
   }
 
+  function getDecisionStyles(decision: string | undefined) {
+    switch (decision) {
+      case "allow":
+        return "bg-emerald-500/10 text-emerald-300 border-emerald-400/40";
+      case "review":
+        return "bg-amber-500/10 text-amber-300 border-amber-400/40";
+      case "block":
+        return "bg-red-500/10 text-red-300 border-red-400/40";
+      default:
+        return "bg-slate-800/60 text-slate-300 border-slate-700/70";
+    }
+  }
+
   return (
     <section className="mt-10 border border-slate-800 rounded-xl bg-slate-900/60 p-4 md:p-5">
       <h2 className="text-lg font-semibold text-slate-50 mb-2">
         6. Try it live
       </h2>
       <p className="text-xs text-slate-300 mb-4">
-        Call your running API directly from the browser. Make sure your backend
-        is running on <code className="font-mono">http://localhost:4000</code>.
+        Call your running API directly from the browser using the base URL
+        configured in{" "}
+        <code className="font-mono">NEXT_PUBLIC_API_BASE_URL</code>. In
+        production this points at your deployed backend; in local dev it falls
+        back to <code className="font-mono">http://localhost:4000</code>.
       </p>
 
       <div className="space-y-3 mb-4">
@@ -113,13 +129,85 @@ export function TryIt() {
       )}
 
       {result && (
-        <div className="mt-4">
-          <p className="text-xs font-medium text-slate-300 mb-1">
-            Response
-          </p>
-          <pre className="bg-slate-950/80 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto max-h-72">
-            {JSON.stringify(result, null, 2)}
-          </pre>
+        <div className="mt-4 space-y-3">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {/* Decision card */}
+            <div
+              className={`rounded-lg border px-3 py-2 text-xs ${getDecisionStyles(
+                result?.overall?.recommendation
+              )}`}
+            >
+              <p className="font-semibold mb-0.5">Decision</p>
+              <p className="capitalize">
+                {result?.overall?.recommendation || "unknown"}
+              </p>
+              {Array.isArray(result?.overall?.notes) &&
+                result.overall.notes.length > 0 && (
+                  <p className="mt-1 text-[10px] opacity-80 line-clamp-2">
+                    {result.overall.notes.join(" ")}
+                  </p>
+                )}
+            </div>
+
+            {/* Safety card */}
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs">
+              <p className="font-semibold mb-0.5">Safety</p>
+              <p className="mb-0.5">
+                Score:{" "}
+                <span className="font-mono">
+                  {typeof result?.safety?.score === "number"
+                    ? result.safety.score.toFixed(2)
+                    : "n/a"}
+                </span>
+              </p>
+              <p className="mb-0.5">
+                Category:{" "}
+                <span className="capitalize">
+                  {result?.safety?.category || "unknown"}
+                </span>
+              </p>
+              {Array.isArray(result?.safety?.flags) &&
+                result.safety.flags.length > 0 && (
+                  <p className="mt-1 text-[10px] text-slate-400 line-clamp-2">
+                    Flags: {result.safety.flags.join(", ")}
+                  </p>
+                )}
+            </div>
+
+            {/* Compliance / privacy card */}
+            <div className="rounded-lg border border-slate-800 bg-slate-950/70 px-3 py-2 text-xs">
+              <p className="font-semibold mb-0.5">Compliance &amp; privacy</p>
+              <p className="mb-0.5">
+                Compliance score:{" "}
+                <span className="font-mono">
+                  {typeof result?.overall?.complianceScore === "number"
+                    ? result.overall.complianceScore.toFixed(2)
+                    : "n/a"}
+                </span>
+              </p>
+              <p className="mb-0.5">
+                PII detected:{" "}
+                <span className="font-mono">
+                  {result?.privacy?.piiDetected ? "yes" : "no"}
+                </span>
+              </p>
+              {Array.isArray(result?.privacy?.piiTypes) &&
+                result.privacy.piiTypes.length > 0 && (
+                  <p className="mt-1 text-[10px] text-slate-400 line-clamp-2">
+                    Types: {result.privacy.piiTypes.join(", ")}
+                  </p>
+                )}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium text-slate-300 mb-1">
+              Raw response
+            </p>
+            <pre className="bg-slate-950/80 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto max-h-72">
+              {JSON.stringify(result, null, 2)}
+            </pre>
+          </div>
         </div>
       )}
     </section>
