@@ -160,7 +160,7 @@ main().catch(console.error);`}
 
             {quickstartLang === "python" && (
               <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-3 text-slate-100 overflow-x-auto">
-{`from compliance_client import ComplianceClient
+{`from client import ComplianceClient
 
 client = ComplianceClient(
     api_key="cpk_your_api_key_here",
@@ -217,8 +217,17 @@ Content-Type: application/json
 {`Authorization: Bearer cpk_1234abcd...`}
             </pre>
             <p className="mt-2 text-xs text-slate-400">
-              Invalid or inactive keys will return a JSON error: <code>{"{ \"error\": \"Invalid API key\" }"}</code>
+              Invalid or inactive keys return a structured JSON error:
             </p>
+            <pre className="mt-1 bg-slate-900/70 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto">
+{`{
+  "error": {
+    "code": "AUTH_INVALID_API_KEY",
+    "message": "Invalid API key.",
+    "status": 403
+  }
+}`}
+            </pre>
           </div>
 
           <div>
@@ -306,18 +315,36 @@ Authorization: Bearer cpk_1234abcd...`}
               A minimal SDK is included in <code>src/sdk/client.ts</code> of the backend repo:
             </p>
             <pre className="bg-slate-900/70 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto">
-{`import { createComplianceClient } from "./src/sdk/client";
+{`import { createComplianceClient, CompliancePacketAPIError } from "./src/sdk/client";
 
 const client = createComplianceClient({
   apiKey: "cpk_your_key_here",
-  baseUrl: "http://localhost:4000",
+  baseUrl: "http://localhost:4000", // or your deployed URL
 });
 
-const packet = await client.check("Some text to evaluate");
-console.log(packet.overall.recommendation);
+async function main() {
+  try {
+    const packet = await client.check("Some text to evaluate");
+    console.log("Decision:", packet.overall.recommendation);
+    console.log("Safety score:", packet.safety.score);
 
-const usage = await client.usage();
-console.log(usage.summary);`}
+    const usage = await client.usage();
+    console.log("Usage summary:", usage.summary);
+  } catch (err) {
+    if (err instanceof CompliancePacketAPIError) {
+      console.error("API error from Compliance Packet:", {
+        code: err.code,
+        status: err.status,
+        details: err.details,
+        message: err.message,
+      });
+    } else {
+      console.error("Unexpected error:", err);
+    }
+  }
+}
+
+main();`}
             </pre>
           </div>
           <div>
@@ -336,6 +363,31 @@ console.log(usage.summary);`}
                 GET /usage
               </code>{" "}
               into a simple, typed client.
+            </p>
+            <pre className="bg-slate-900/70 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto mb-2">
+{`from client import ComplianceClient, CompliancePacketError
+
+client = ComplianceClient(
+    api_key="cpk_your_api_key_here",
+    base_url="http://localhost:4000",  # or your deployed URL
+)
+
+try:
+    packet = client.check("Some text to evaluate")
+    print("Decision:", packet.overall.recommendation)
+    print("Safety score:", packet.safety.score)
+
+    usage = client.usage()
+    print("Usage summary:", usage["summary"])
+except CompliancePacketError as e:
+    print("API error from Compliance Packet:")
+    print("  code:", e.code)
+    print("  status:", e.status)
+    print("  details:", e.details)`}
+            </pre>
+            <p className="text-xs text-slate-400 mb-2">
+              All non-2xx responses raise <code>CompliancePacketError</code>, which exposes <code>code</code>,{" "}
+              <code>status</code>, and optional <code>details</code> from the API.
             </p>
             <p className="text-xs text-slate-400 mb-2">
               For full details and examples, see the dedicated Python SDK docs:

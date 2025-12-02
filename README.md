@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌐 Compliance Packet Web  
+**Frontend documentation site & live tester for the Universal Compliance Packet API.**  
+Built with Next.js, styled for clarity, and designed to help developers integrate trust/safety in minutes.
 
-## Getting Started
+---
 
-First, run the development server:
+## 🚀 Overview
+
+This repository contains the **public web interface** for Compliance Packet, including:
+
+- 📄 **Product landing page**  
+- 📘 **Developer documentation**  
+- 🧪 **Live API tester**  
+- 📊 **Usage dashboard**  
+- 🗝 **API key creation interface** (via backend)
+
+It is deployed on **Vercel** and tightly integrated with the Compliance Packet backend API (Railway).
+
+---
+
+## 🛠 Tech Stack
+
+- **Next.js 14** (App Router)  
+- **React**  
+- **TailwindCSS**  
+- **TypeScript**  
+- Hosted on **Vercel**
+
+---
+
+## 🧑‍💻 Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The site will be available at:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+👉 http://localhost:3000
 
-## Learn More
+Hot reload is enabled — edit any file in `/app/**` and the page updates automatically.
 
-To learn more about Next.js, take a look at the following resources:
+Production site: **<https://compliance-packet-web.vercel.app>**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Important Structure
 
-## Deploy on Vercel
+```
+app/
+  page.tsx            → Landing page
+  docs/page.tsx       → Documentation
+  tester/page.tsx     → Live API tester
+  components/         → UI components
+public/
+  assets/             → Logos & branding
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔌 Backend Connection
+
+The frontend communicates with the Compliance Packet API via:
+
+```
+NEXT_PUBLIC_API_BASE_URL=https://your-api-url
+```
+
+You must set this in your Vercel environment variables for production.
+
+---
+
+## 📦 SDK Links
+
+The site surfaces official SDKs:
+
+- **JavaScript / TypeScript**  
+  https://www.npmjs.com/package/compliance-packet
+
+- **Python**  
+  https://pypi.org/project/compliance-packet/
+
+---
+
+## 🚀 Deployment
+
+Deployment is handled automatically by Vercel when pushing to `main`.
+
+Manual deploy:
+
+```bash
+vercel --prod
+```
+
+Before deploying, ensure environment variables are present in Vercel:
+
+- `NEXT_PUBLIC_API_BASE_URL`
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!  
+Open issues, submit PRs, or request features — the goal is to make Compliance Packet the **simplest AI trust layer on the market.**
+
+---
+
+## 📄 License
+
+MIT
