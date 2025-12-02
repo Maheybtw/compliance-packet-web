@@ -1,6 +1,19 @@
 export default function PythonSdkDocsPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
+      <nav className="w-full border-b border-slate-800 bg-slate-900/40 backdrop-blur-sm">
+        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+          <a href="/" className="text-slate-300 hover:text-white text-sm font-medium">
+            ← Back to Home
+          </a>
+          <a
+            href="/docs"
+            className="text-slate-300 hover:text-white text-sm font-medium"
+          >
+            Documentation
+          </a>
+        </div>
+      </nav>
       <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
         {/* Header */}
         <header className="space-y-2">

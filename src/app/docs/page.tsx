@@ -78,6 +78,42 @@ export default function DocsPage() {
           </p>
         </header>
 
+        <section className="mb-6 rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-xs text-slate-200">
+          <h2 className="text-sm font-semibold text-slate-50 mb-2">
+            Install official SDKs
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <p className="mb-1 text-[11px] text-slate-300">JavaScript / TypeScript (npm):</p>
+              <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-2 text-[11px] text-slate-100 overflow-x-auto">
+{`npm install compliance-packet`}
+              </pre>
+              <a
+                href="https://www.npmjs.com/package/compliance-packet"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex text-[11px] font-medium text-emerald-300 hover:text-emerald-200"
+              >
+                View on npm →
+              </a>
+            </div>
+            <div>
+              <p className="mb-1 text-[11px] text-slate-300">Python (PyPI):</p>
+              <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-2 text-[11px] text-slate-100 overflow-x-auto">
+{`pip install compliance-packet`}
+              </pre>
+              <a
+                href="https://pypi.org/project/compliance-packet/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex text-[11px] font-medium text-emerald-300 hover:text-emerald-200"
+              >
+                View on PyPI →
+              </a>
+            </div>
+          </div>
+        </section>
+
         <section className="mb-8 rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-200">
           <h2 className="text-lg font-semibold text-slate-50 mb-2">Quickstart</h2>
           <p className="text-xs text-slate-300 mb-3">
@@ -138,29 +174,46 @@ export default function DocsPage() {
 
             {quickstartLang === "node" && (
               <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-3 text-slate-100 overflow-x-auto">
-{`import { createComplianceClient } from "./src/sdk/client";
+{`import {
+  createComplianceClient,
+  CompliancePacketAPIError,
+} from "compliance-packet";
 
 const client = createComplianceClient({
-  apiKey: process.env.COMPLIANCE_API_KEY || "cpk_your_api_key_here",
-  baseUrl: process.env.COMPLIANCE_API_URL || "https://compliance-packet-api-production.up.railway.app",
+  apiKey: "cpk_your_api_key_here",
+  // Optional: override base URL for local dev or self-hosting
+  // baseUrl: "http://localhost:4000",
 });
 
 async function main() {
-  const packet = await client.check(
-    "Hello from Compliance Packet Quickstart."
-  );
+  try {
+    const packet = await client.check(
+      "Hello from Compliance Packet Quickstart."
+    );
 
-  console.log("Decision:", packet.overall.recommendation);
-  console.log("Safety score:", packet.safety.score);
+    console.log("Decision:", packet.overall.recommendation);
+    console.log("Safety score:", packet.safety.score);
+  } catch (err) {
+    if (err instanceof CompliancePacketAPIError) {
+      console.error("Compliance Packet API error:", {
+        code: err.code,
+        status: err.status,
+        details: err.details,
+        message: err.message,
+      });
+    } else {
+      console.error("Unexpected error:", err);
+    }
+  }
 }
 
-main().catch(console.error);`}
+main();`}
               </pre>
             )}
 
             {quickstartLang === "python" && (
               <pre className="bg-slate-950/80 rounded-lg border border-slate-800 p-3 text-slate-100 overflow-x-auto">
-{`from client import ComplianceClient
+{`from compliance_packet import ComplianceClient
 
 client = ComplianceClient(
     api_key="cpk_your_api_key_here",
@@ -228,6 +281,44 @@ Content-Type: application/json
   }
 }`}
             </pre>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-slate-50 mb-2">
+              2a. Errors &amp; status codes
+            </h2>
+            <p className="mb-2">
+              All non-2xx responses return a structured error object with a stable code, message, and HTTP status:
+            </p>
+            <pre className="bg-slate-900/70 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto">
+{`{
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Daily quota exceeded for this API key.",
+    "status": 429,
+    "details": {
+      "limit": 10000,
+      "window": "24h"
+    }
+  }
+}`}
+            </pre>
+            <p className="mt-2 text-xs text-slate-400">
+              Common error codes:
+            </p>
+            <ul className="mt-1 list-disc list-inside text-xs text-slate-400 space-y-1">
+              <li>
+                <code>AUTH_INVALID_API_KEY</code> – invalid or inactive API key (401/403)
+              </li>
+              <li>
+                <code>RATE_LIMIT_EXCEEDED</code> – rate limit or quota exceeded (429)
+              </li>
+              <li>
+                <code>BAD_REQUEST</code> – invalid request payload (400)
+              </li>
+              <li>
+                <code>INTERNAL_ERROR</code> – unexpected server error (500)
+              </li>
+            </ul>
           </div>
 
           <div>
@@ -312,14 +403,18 @@ Authorization: Bearer cpk_1234abcd...`}
           <div>
             <h2 className="text-lg font-semibold text-slate-50 mb-2">5. Node / TypeScript SDK</h2>
             <p className="mb-2">
-              A minimal SDK is included in <code>src/sdk/client.ts</code> of the backend repo:
+              Use the official JavaScript / TypeScript SDK from npm:{" "}
+              <code className="font-mono bg-slate-900/70 px-1 py-0.5 rounded">compliance-packet</code>.
             </p>
             <pre className="bg-slate-900/70 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto">
-{`import { createComplianceClient, CompliancePacketAPIError } from "./src/sdk/client";
+{`import {
+  createComplianceClient,
+  CompliancePacketAPIError,
+} from "compliance-packet";
 
 const client = createComplianceClient({
-  apiKey: "cpk_your_key_here",
-  baseUrl: "http://localhost:4000", // or your deployed URL
+  apiKey: "cpk_your_api_key_here",
+  // baseUrl: "https://compliance-packet-api-production.up.railway.app", // optional override for self-hosting
 });
 
 async function main() {
@@ -365,7 +460,7 @@ main();`}
               into a simple, typed client.
             </p>
             <pre className="bg-slate-900/70 rounded-lg p-3 text-[11px] text-slate-100 overflow-x-auto mb-2">
-{`from client import ComplianceClient, CompliancePacketError
+{`from compliance_packet import ComplianceClient, CompliancePacketError
 
 client = ComplianceClient(
     api_key="cpk_your_api_key_here",
